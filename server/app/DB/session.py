@@ -14,17 +14,18 @@ DB_NAME = os.getenv("DB_NAME")
 
 SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-print(f"Connecting to DB at {DB_HOST}:{DB_PORT} with user {DB_USER} and database {DB_NAME}")
-
+# Testing my database connection
 print(f"Database URL: {SQLALCHEMY_DATABASE_URL}")
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, 
+    pool_size=50,  
+    max_overflow=100 
+)
 
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 Base = declarative_base()
-
 def get_db():
     db = SessionLocal()
     try:
