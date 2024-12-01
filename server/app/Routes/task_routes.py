@@ -9,8 +9,7 @@ router = APIRouter()
 
 @router.post("/tasks/", response_model=Task)
 def create_task_route(task: TaskCreate, db: Session = Depends(get_db)):
-    # For now, assuming the user ID is 1 for testing
-    # In a real-world application, the user ID would be obtained from the user's authentication token
+    # The user id is required, and in most cases it should be from the authenticated user
     user_id = 1  
     return create_task(db=db, title=task.title, description=task.description, is_completed=task.is_completed, user_id=user_id)
 

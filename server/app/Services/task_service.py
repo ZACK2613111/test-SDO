@@ -18,8 +18,8 @@ def create_task(db: Session, title: str, description: str, is_completed: bool, u
     return new_task
 
 def get_tasks_by_user(db: Session, user_id: int):
-    tasks = db.query(Task).filter(Task.user_id == user_id).all()
-    return tasks
+    return db.query(Task).filter(Task.user_id == user_id).all()
+     
 
 def update_task(db: Session, task_id: int, title: str, description: str, is_completed: bool):
     task = db.query(Task).filter(Task.id == task_id).first()

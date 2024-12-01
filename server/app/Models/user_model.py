@@ -10,6 +10,6 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
-    tasks: List[int] = [] 
+    
     class Config:
-        from_attributes = True
+        orm_mode = True
