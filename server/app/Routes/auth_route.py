@@ -19,8 +19,14 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         new_user = register_user(db=db, email=user.email, password=user.password, name=user.name)
     except HTTPException as e:
         raise e  
+
+    access_token = create_access_token(data={"sub": new_user.email})
+
+    response = JSONResponse(content={"msg": "User registered and logged in successfully", "user_id": new_user.id}, status_code=status.HTTP_200_OK)
+    response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=3600)
     
-    return {"msg": "User registered successfully", "email": new_user.email}
+    return response
+
 
 @router.post("/auth/login")
 def login(request: LoginRequest, db: Session = Depends(get_db)):
@@ -29,19 +35,19 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     access_token = create_access_token(data={"sub": user.email})
-    
-    # Set the token in a cookie
+
     response = JSONResponse(content={"msg": "Login successful", "user_id": user.id}, status_code=status.HTTP_200_OK)
     response.set_cookie(key="access_token", value=access_token, httponly=True, max_age=3600)
     
     return response
+
 
 @router.post("/auth/logout")
 def logout(response: Response, request: Request):
     access_token = request.cookies.get("access_token")
     
     if not access_token:
-        raise HTTPException(status_code=401, detail="User is not logged in")
+        raise HTTPException(status_code=401, detail="Not authenticated")
     
     response.delete_cookie("access_token")
     
