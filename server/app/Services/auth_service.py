@@ -1,9 +1,8 @@
 import os
-import re
 from dotenv import load_dotenv
+from fastapi import HTTPException
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
-from fastapi import HTTPException
 from passlib.context import CryptContext
 from typing import Optional
 from app.DB.models import User
@@ -32,10 +31,12 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def register_user(db: Session, email: str, password: str, name: str) -> User:
-    if not validate_password(password):
-        raise HTTPException(status_code=400, detail="Password does not meet complexity requirements")
+def create_refresh_token(data: dict) -> str:
     
+    expires_delta = timedelta(days=7)
+    return create_access_token(data=data, expires_delta=expires_delta)
+
+def register_user(db: Session, email: str, password: str, name: str) -> User:
     hashed_password = hash_password(password)
     db_user = User(email=email, password=hashed_password, name=name)
     db.add(db_user)
@@ -49,15 +50,26 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
         return db_user
     return None
 
-def validate_password(password: str) -> bool:
-    if len(password) < 8:
+def is_token_expired(token: str) -> bool:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        exp = payload.get("exp")
+        if exp and datetime.utcfromtimestamp(exp) < datetime.utcnow():
+            return True
         return False
-    if not re.search(r"[A-Z]", password):  
-        return False
-    if not re.search(r"[a-z]", password):  
-        return False
-    if not re.search(r"[0-9]", password):  
-        return False
-    if not re.search(r"[\W_]", password):  
-        return False
-    return True
+    except JWTError:
+        return True
+
+def get_current_user(db: Session, token: str) -> User:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_email: str = payload.get("sub")
+        if user_email is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        user = db.query(User).filter(User.email == user_email).first()
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+    except jwt.JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
