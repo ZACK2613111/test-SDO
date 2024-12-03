@@ -14,12 +14,16 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 def create_user(db: Session, name: str, email: str, password: str) -> User:
+    if get_user_by_email(db, email):
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
     hashed_password = hash_password(password)
     new_user = User(name=name, email=email, password=hashed_password)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
+
 
 
 def get_all_users(db: Session):
@@ -53,6 +57,7 @@ def update_user(db: Session, user_id: int, name: str, email: str, password: str)
     return None
 
 def delete_user(db: Session, user_id: int):
+    
     user = db.query(User).filter(User.id == user_id).first()
     
     if user:

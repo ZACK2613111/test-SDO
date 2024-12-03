@@ -7,23 +7,18 @@ from app.DB.models import User
 from typing import Optional
 import os
 
-# Secret key and algorithm
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", "Zakaria")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
 
-# Initialize password hashing context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Function to hash passwords
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
-# Function to verify password
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-# Function to create access token (JWT)
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
     if expires_delta:
@@ -34,12 +29,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-# Function to create a refresh token
 def create_refresh_token(data: dict) -> str:
     expires_delta = timedelta(days=7)
     return create_access_token(data=data, expires_delta=expires_delta)
 
-# Register User in DB
 def register_user(db: Session, email: str, password: str, name: str) -> User:
     hashed_password = hash_password(password)
     db_user = User(email=email, password=hashed_password, name=name)
@@ -48,14 +41,12 @@ def register_user(db: Session, email: str, password: str, name: str) -> User:
     db.refresh(db_user)
     return db_user
 
-# Authenticate User (check email and password)
 def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     db_user = db.query(User).filter(User.email == email).first()
     if db_user and verify_password(password, db_user.password):
         return db_user
     return None
 
-# Check if token is expired
 def is_token_expired(token: str) -> bool:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

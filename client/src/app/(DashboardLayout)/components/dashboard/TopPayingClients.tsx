@@ -54,7 +54,7 @@ const products = [
 
 const TopPayingClients = () => {
   return (
-    <DashboardCard title="Top Paying Clients">
+    <DashboardCard title="Tasks">
       <Box sx={{ overflow: "auto" }}>
         <Box sx={{ width: "100%", display: "table", tableLayout: "fixed" }}>
           <Table

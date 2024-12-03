@@ -1,12 +1,11 @@
 "use client";
 import Link from "next/link";
 import { Grid, Box, Card, Stack, Typography } from "@mui/material";
-// components
 import PageContainer from "@/app/(DashboardLayout)/components/container/PageContainer";
 import Logo from "@/app/(DashboardLayout)/layout/shared/logo/Logo";
 import AuthLogin from "../auth/AuthLogin";
 
-const Login2 = () => {
+const LoginPage: React.FC = () => {
   return (
     <PageContainer title="Login" description="this is Login page">
       <Box
@@ -55,7 +54,7 @@ const Login2 = () => {
                     color="textSecondary"
                     mb={1}
                   >
-                    Your Social Campaigns
+                    Your tasks 
                   </Typography>
                 }
                 subtitle={
@@ -70,7 +69,7 @@ const Login2 = () => {
                       variant="h6"
                       fontWeight="500"
                     >
-                      New to Spike?
+                      Need to organise your tasks?
                     </Typography>
                     <Typography
                       component={Link}
@@ -93,4 +92,5 @@ const Login2 = () => {
     </PageContainer>
   );
 };
-export default Login2;
+
+export default LoginPage;

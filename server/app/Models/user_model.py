@@ -27,7 +27,10 @@ class UserCreate(UserBase):
             raise ValueError("Password must contain at least one letter")
         if not any(c in "!@#$%^&*()_+-=" for c in value):
             raise ValueError("Password must contain at least one special character")
-        return value
+        return value 
+    
+    class Config:
+        orm_mode = True
 
 class User(UserBase):
     id: int
