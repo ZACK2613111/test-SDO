@@ -1,6 +1,6 @@
 from jose import JWTError, jwt
 from datetime import datetime, timedelta, timezone
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from app.DB.models import User
@@ -55,17 +55,26 @@ def is_token_expired(token: str) -> bool:
 
 
 
-def get_current_user(db: Session, token: str) -> User:
+def get_current_user(db: Session, token: str):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    if not token:
+        raise credentials_exception
+    
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_email: str = payload.get("sub")
+        user_email = payload.get("sub")
         if user_email is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
+            raise credentials_exception
         
         user = db.query(User).filter(User.email == user_email).first()
         if user is None:
-            raise HTTPException(status_code=404, detail="User not found")
-        return user
-    except jwt.JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+            raise credentials_exception
+        return user 
+    except JWTError:
+        raise credentials_exception
     

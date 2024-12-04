@@ -1,63 +1,46 @@
-from app.DB.session import SessionLocal
-from app.DB.models.user import User
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
+from app.Models.user_model import User, UserCreate
+from app.Services.auth_service import get_current_user
 from fastapi import HTTPException
-from app.Services.task_service import get_tasks_by_user
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+def create_user(db: Session, user_data: UserCreate) -> User:
 
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
-
-def create_user(db: Session, name: str, email: str, password: str) -> User:
-    if get_user_by_email(db, email):
+    db_user = db.query(User).filter(User.email == user_data.email).first()
+    if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
-    hashed_password = hash_password(password)
-    new_user = User(name=name, email=email, password=hashed_password)
+    new_user = User(
+        name=user_data.name,
+        email=user_data.email,
+        password=user_data.password
+    )
+    
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
 
-
-
-def get_all_users(db: Session):
-    return db.query(User).all()
-
-
-
-def get_user_by_name(db: Session, name: str) -> User:
-    return db.query(User).filter(User.name == name).first()
-
-
 def get_user_by_email(db: Session, email: str) -> User:
     return db.query(User).filter(User.email == email).first()
 
 def fetch_user_by_id(db: Session, user_id: int):
-    db_user = db.query(User).filter(User.id == user_id).first()
-    return db_user
+    return db.query(User).filter(User.id == user_id).first()
 
+def get_all_users(db: Session):
+    return db.query(User).all()
 
-def update_user(db: Session, user_id: int, name: str, email: str, password: str):
-    hashed_password = hash_password(password)
+def update_user(db: Session, user_id: int, user_data: UserCreate):
     db_user = db.query(User).filter(User.id == user_id).first()
     
     if db_user:
-        db_user.name = name
-        db_user.email = email
-        db_user.password = hashed_password
+        db_user.name = user_data.name
+        db_user.email = user_data.email
+        db_user.password = user_data.password 
         db.commit()
         db.refresh(db_user)
         return db_user
     return None
-
 def delete_user(db: Session, user_id: int):
-    
     user = db.query(User).filter(User.id == user_id).first()
     
     if user:
