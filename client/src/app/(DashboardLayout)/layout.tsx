@@ -33,39 +33,21 @@ export default function RootLayout({
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   return (
     <MainWrapper className="mainwrapper">
-      {/* ------------------------------------------- */}
-      {/* Sidebar */}
-      {/* ------------------------------------------- */}
+      
       <Sidebar
         isSidebarOpen={isSidebarOpen}
         isMobileSidebarOpen={isMobileSidebarOpen}
         onSidebarClose={() => setMobileSidebarOpen(false)}
       />
-      {/* ------------------------------------------- */}
-      {/* Main Wrapper */}
-      {/* ------------------------------------------- */}
       <PageWrapper className="page-wrapper">
-        {/* ------------------------------------------- */}
-        {/* PageContent */}
-        {/* ------------------------------------------- */}
         <Container
           sx={{
             maxWidth: "1300px !important",
           }}
         >
-          {/* ------------------------------------------- */}
-          {/* Header */}
-          {/* ------------------------------------------- */}
-          <Header toggleMobileSidebar={() => setMobileSidebarOpen(true)} />
-          {/* ------------------------------------------- */}
-          {/* Page Route */}
-          {/* ------------------------------------------- */}
           <Box sx={{ minHeight: "calc(100vh - 170px)", py: 3  }}>
             {children}
           </Box>
-          {/* ------------------------------------------- */}
-          {/* End Page */}
-          {/* ------------------------------------------- */}
         </Container>
       </PageWrapper>
     </MainWrapper>

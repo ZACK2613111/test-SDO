@@ -11,7 +11,7 @@ const LinkStyled = styled(Link)(() => ({
 
 const Logo = () => {
   return (
-    <LinkStyled href="/">
+    <LinkStyled href="https://smartdrillingops.com" target="_blank">
       <Image src="/images/logos/Logo.jpeg" alt="logo" height={74} width={190} priority />
     </LinkStyled>
   );

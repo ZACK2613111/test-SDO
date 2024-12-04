@@ -64,10 +64,10 @@ export default function NavItem({
     paddingLeft: hideMenu
       ? "0"
       : level > 2
-      ? `${level * 15}px`
-      : level > 1
-      ? "10px"
-      : "0",
+        ? `${level * 15}px`
+        : level > 1
+          ? "10px"
+          : "0",
     "&:before": {
       content: '""',
       position: "absolute",
@@ -93,15 +93,15 @@ export default function NavItem({
       borderRadius: "8px",
       marginRight: "8px",
       transition: "all .3s ease-in-out",
-      // color: item.children ? "" : theme.palette.primary.main,
-      // backgroundColor: item.children ? "" : theme.palette.primary.light,
+      color: item.children ? "" : theme.palette.primary.main,
+      backgroundColor: item.children ? "" : theme.palette.primary.light,
     },
     "&:hover": {
       backgroundColor: "transparent !important",
-      //color: theme.palette.primary.main,
+      color: theme.palette.primary.main,
     },
     "&.Mui-selected": {
-      //color: theme.palette.text.primary,
+      color: theme.palette.text.primary,
       backgroundColor: "transparent !important",
       ".MuiListItemIcon-root": {
         color: theme.palette.primary.main,
@@ -111,7 +111,7 @@ export default function NavItem({
         width: "calc(100% + 16px)",
       },
       "&:hover": {
-        // backgroundColor: theme.palette.primary.light,
+        backgroundColor: theme.palette.primary.light,
         color: theme.palette.text.primary,
       },
     },
@@ -133,7 +133,7 @@ export default function NavItem({
     <List component="li" disablePadding key={item?.id && item.title}>
       <Link href={item.href} style={{ textDecoration: "none" }}>
         <ListItemStyled
-          // {...listItemProps}
+          {...listItemProps}
           disabled={item?.disabled}
           selected={pathDirect === item?.href}
           onClick={undefined}
@@ -147,17 +147,17 @@ export default function NavItem({
             "&:hover::before": {
               backgroundColor: item.bgcolor + ".light",
             },
-            // ".MuiListItemIcon-root": {
-            //   color: item.bgcolor + ".main",
-            //   backgroundColor: item.bgcolor + ".light",
-            // },
+            ".MuiListItemIcon-root": {
+              color: item.bgcolor + ".main",
+              backgroundColor: item.bgcolor + ".light",
+            },
             "&.Mui-selected": {
               color:
                 level > 1
                   ? `${theme.palette.text.secondary} !important`
                   : "primary.main",
               "& .MuiTypography-root": {
-                fontWeight: "600 !important" ,
+                fontWeight: "600 !important",
               },
               ".MuiListItemIcon-root": {
                 color: "primary.main",

@@ -9,7 +9,7 @@ import os
 
 SECRET_KEY = os.getenv("SECRET_KEY", "Zakaria")
 ALGORITHM = os.getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -19,7 +19,7 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict, expires_delta: 60) -> str:
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -28,10 +28,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
-def create_refresh_token(data: dict) -> str:
-    expires_delta = timedelta(days=7)
-    return create_access_token(data=data, expires_delta=expires_delta)
 
 def register_user(db: Session, email: str, password: str, name: str) -> User:
     hashed_password = hash_password(password)
@@ -58,6 +54,7 @@ def is_token_expired(token: str) -> bool:
         return True
 
 
+
 def get_current_user(db: Session, token: str) -> User:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -71,3 +68,4 @@ def get_current_user(db: Session, token: str) -> User:
         return user
     except jwt.JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+    

@@ -1,6 +1,4 @@
-import { Box, Typography, Button } from "@mui/material";
-import img1 from "public/images/backgrounds/rocket.png";
-import Image from "next/image";
+import { Box, Button } from "@mui/material";
 import Link from "next/link";
 
 export const Upgrade = () => {
@@ -17,7 +15,7 @@ export const Upgrade = () => {
           target="_blank"
           disableElevation
           component={Link}
-          href="https://www.wrappixel.com/templates/spike-nextjs-admin-template/"
+          href=""
           variant="contained"
           aria-label="logout"
           size="large" sx={{width: "100%"}}

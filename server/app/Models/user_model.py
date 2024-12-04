@@ -6,34 +6,40 @@ class UserBase(BaseModel):
     email: EmailStr
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
     @field_validator("name")
-    def validate_name_length(cls, value):
-        if len(value) > 20:
+    def validate_name_length(cls, value: str) -> str:
+        if len(value.strip()) > 20:
             raise ValueError("Name cannot be longer than 20 characters.")
-        return value
+        if not value.strip():
+            raise ValueError("Name cannot be empty.")
+        return value.strip()
+
 
 class UserCreate(UserBase):
     password: str
 
     @field_validator("password")
-    def validate_password_strength(cls, value):
+    def validate_password_strength(cls, value: str) -> str:
         if len(value) < 8:
-            raise ValueError("Password must be at least 8 characters long")
+            raise ValueError("Password must be at least 8 characters long.")
         if not any(c.isdigit() for c in value):
-            raise ValueError("Password must contain at least one digit")
+            raise ValueError("Password must contain at least one digit.")
         if not any(c.isalpha() for c in value):
-            raise ValueError("Password must contain at least one letter")
+            raise ValueError("Password must contain at least one letter.")
         if not any(c in "!@#$%^&*()_+-=" for c in value):
-            raise ValueError("Password must contain at least one special character")
-        return value 
+            raise ValueError("Password must contain at least one special character.")
+        if " " in value:
+            raise ValueError("Password cannot contain spaces.")
+        return value
     
     class Config:
-        orm_mode = True
+        from_attributes = True
+
 
 class User(UserBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

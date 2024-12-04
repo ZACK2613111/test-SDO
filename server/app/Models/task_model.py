@@ -5,8 +5,6 @@ class TaskBase(BaseModel):
     title: str
     description: Optional[str] = None
     is_completed: bool = False
-
-    # Ensure that is_completed is a boolean (although Pydantic already does this)
     @field_validator('is_completed')
     def check_is_completed(cls, value):
         if not isinstance(value, bool):
@@ -35,4 +33,4 @@ class Task(TaskBase):
     user_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True

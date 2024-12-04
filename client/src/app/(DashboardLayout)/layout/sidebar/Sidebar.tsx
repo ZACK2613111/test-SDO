@@ -16,7 +16,7 @@ const Sidebar = ({
 }: ItemType) => {
   const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up("lg"));
 
-  const sidebarWidth = "270px";
+  const sidebarWidth = "330px";
 
   if (lgUp) {
     return (
@@ -59,7 +59,7 @@ const Sidebar = ({
             {/* ------------------------------------------- */}
             {/* Logo */}
             {/* ------------------------------------------- */}
-            <Box px={3}>
+            <Box px={6}>
               <Logo />
             </Box>
             <Box>
@@ -91,14 +91,13 @@ const Sidebar = ({
       {/* ------------------------------------------- */}
       {/* Logo */}
       {/* ------------------------------------------- */}
-      <Box px={2}>
+      <Box px={6}>
         <Logo />
       </Box>
       {/* ------------------------------------------- */}
       {/* Sidebar For Mobile */}
       {/* ------------------------------------------- */}
       <SidebarItems />
-      <Upgrade />
     </Drawer>
   );
 };
