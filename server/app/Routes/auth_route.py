@@ -18,18 +18,35 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 router = APIRouter()
 
 def set_token_cookie(response: Response, token: str):
+    """
+    Set the access token as a cookie in the response.
 
+    Args:
+        response: The FastAPI response object.
+        token: The JWT token to be set as a cookie.
+    """
     response.set_cookie(
         key="access_token",
         value=token,
         httponly=True,
-        secure=False,
+        secure=False,  # Set to True in production with HTTPS
         samesite="Lax",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
 @router.post("/auth/register", status_code=status.HTTP_201_CREATED)
 def register(user: UserCreate, response: Response, db: Session = Depends(get_db)):
+    """
+    Register a new user and automatically log them in.
+
+    Args:
+        user: UserCreate model containing user details for registration.
+        response: The FastAPI response object to set the cookie.
+        db: Database session dependency.
+
+    Returns:
+        A dictionary with success message and access token.
+    """
     if db.query(User).filter(User.email == user.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
 
@@ -53,10 +70,20 @@ def register(user: UserCreate, response: Response, db: Session = Depends(get_db)
     }
 
 
-from fastapi import Request
-
 @router.post("/auth/login", status_code=status.HTTP_200_OK)
 def login(request: Request, login_request: LoginRequest, response: Response, db: Session = Depends(get_db)):
+    """
+    Log in an existing user and return an access token.
+
+    Args:
+        request: The incoming HTTP request to check for existing tokens.
+        login_request: LoginRequest model containing user credentials.
+        response: The FastAPI response object to set the cookie.
+        db: Database session dependency.
+
+    Returns:
+        A dictionary with success message, access token, and token expiration.
+    """
     token = request.cookies.get("access_token")
     expiration_time = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     remaining_time = expiration_time - datetime.utcnow()
@@ -94,6 +121,16 @@ def login(request: Request, login_request: LoginRequest, response: Response, db:
     
 @router.post("/auth/logout", status_code=status.HTTP_200_OK)
 def logout(request: Request, response: Response):
+    """
+    Log out the user by deleting the access token cookie.
+
+    Args:
+        request: The incoming HTTP request to read cookies.
+        response: The FastAPI response object to delete the cookie.
+
+    Returns:
+        A dictionary with success message.
+    """
     response.delete_cookie("access_token", path="/", samesite="lax")
     
     if "Authorization" in request.headers:
@@ -106,6 +143,16 @@ def logout(request: Request, response: Response):
 
 @router.get("/auth/me", status_code=status.HTTP_200_OK)
 def me(request: Request, db: Session = Depends(get_db)):
+    """
+    Get the current user's profile based on the access token.
+
+    Args:
+        request: The incoming HTTP request to check cookies.
+        db: Database session dependency.
+
+    Returns:
+        A dictionary with user details (id, name, email).
+    """
     token = request.cookies.get("access_token")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
