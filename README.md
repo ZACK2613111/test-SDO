@@ -26,7 +26,7 @@ Ensure you have the following installed on your machine:
 
 1. **Clone the Repository**  
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/ZACK2613111/test-SDO
    cd server
    ```
 
@@ -49,7 +49,7 @@ Ensure you have the following installed on your machine:
    # JWT configuration
    SECRET_KEY=<your-secret-key>
    ALGORITHM=HS256
-   ACCESS_TOKEN_EXPIRE_MINUTES=30
+   ACCESS_TOKEN_EXPIRE_MINUTES=60
    ```
 
 4. **Alembic Configuration**  
